@@ -2,19 +2,19 @@
 
 Open `index.html` in a browser. All text, colors, spacing, and layout are editable in that file; the generated background and QR code live in `assets/`.
 
-The canvas is print-sized at 11 × 17 inches. The QR code currently points to `https://sig-uva.github.io/`; regenerate it when the registration URL is final:
+The canvas is print-sized at 11 × 17 inches. Build and verify both outputs from anywhere in the repository:
 
 ```sh
-qrencode -t SVG -m 2 -o assets/qr-info.svg 'FINAL_URL'
+./poster/build.sh
 ```
 
-To render the current version with Chrome:
+To replace the QR code, build, and verify that the final PNG and PDF both decode to the supplied URL:
 
 ```sh
-chrome='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-"$chrome" --headless=new --hide-scrollbars --window-size=1056,1632 --screenshot=poster.png "file://$PWD/index.html"
-"$chrome" --headless=new --no-pdf-header-footer --print-to-pdf=poster.pdf "file://$PWD/index.html"
+./poster/build.sh --qr 'FINAL_URL'
 ```
+
+The script requires Google Chrome, Poppler (`pdfinfo` and `pdftoppm`), `qpdf`, `uv`, and—only with `--qr`—`qrencode`. Set `CHROME_BIN` if Chrome is installed elsewhere. The QR currently points to `https://sig-uva.github.io/`. PDF metadata is normalized so rebuilding unchanged inputs does not change the PDF.
 
 ## Image directions considered
 
