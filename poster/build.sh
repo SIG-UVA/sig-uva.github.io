@@ -63,7 +63,7 @@ if ! "$chrome_bin" \
   --headless=new \
   --disable-gpu \
   --hide-scrollbars \
-  --window-size=1056,1632 \
+  --window-size=816,1056 \
   --force-device-scale-factor=1 \
   --screenshot="$poster_dir/poster.png" \
   "$poster_url" >"$check_dir/chrome-png.log" 2>&1; then
@@ -93,7 +93,7 @@ qpdf --static-id --object-streams=generate \
   "$check_dir/poster-qdf.pdf" "$poster_dir/poster.pdf"
 
 page_size=$(pdfinfo "$poster_dir/poster.pdf" | awk -F: '/^Page size/ {gsub(/^[[:space:]]+/, "", $2); print $2}')
-[[ "$page_size" == 792\ x\ 1224\ pts* ]] || {
+[[ "$page_size" == 612\ x\ 792\ pts* ]] || {
   echo "Unexpected PDF page size: $page_size" >&2
   exit 1
 }
@@ -115,16 +115,16 @@ for label, path in (("PNG", png_path), ("PDF", pdf_path)):
     image = cv2.imread(path)
     if image is None:
         raise SystemExit(f"Could not read {label}: {path}")
-    if image.shape[1::-1] != (1056, 1632):
+    if image.shape[1::-1] != (816, 1056):
         raise SystemExit(f"Unexpected {label} dimensions: {image.shape[1]} x {image.shape[0]}")
     value, _, _ = cv2.QRCodeDetector().detectAndDecode(image)
     if not value:
         raise SystemExit(f"Could not decode QR from {label}")
     if expected_url and value != expected_url:
         raise SystemExit(f"{label} QR mismatch: expected {expected_url!r}, got {value!r}")
-    print(f"{label}: 1056 x 1632; QR -> {value}")
+    print(f"{label}: 816 x 1056; QR -> {value}")
 PY
 
-echo "PDF: 11 x 17 in ($page_size)"
+echo "PDF: US Letter, 8.5 x 11 in ($page_size)"
 echo "Built: $poster_dir/poster.png"
 echo "Built: $poster_dir/poster.pdf"

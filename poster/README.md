@@ -2,7 +2,7 @@
 
 Open `index.html` in a browser. All text, colors, spacing, and layout are editable in that file; the generated background and QR code live in `assets/`.
 
-The canvas is print-sized at 11 × 17 inches. Build and verify both outputs from anywhere in the repository:
+The canvas is US Letter portrait (8.5 × 11 inches). Build and verify both outputs from anywhere in the repository:
 
 ```sh
 ./poster/build.sh
