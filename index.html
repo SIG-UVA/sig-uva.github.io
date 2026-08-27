@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What Is the Model Actually Doing? — SDS RIG Interpretability Hackathon</title>
+<meta name="description" content="A hackathon on interpretability, safety evaluation, and security for language models. Monday 19 and Friday 23 October 2026, Capital One Hub.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#131A2B;
+    --paper:#EFF2F6;
+    --surface:#FFFFFF;
+    --navy:#232D4B;
+    --amber:#E57200;
+    --mute:#6B7488;
+    --rule:rgba(35,45,75,.14);
+
+    --display:"Bricolage Grotesque",system-ui,sans-serif;
+    --body:"IBM Plex Sans",system-ui,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+
+    --pad:clamp(1.25rem,5vw,4.5rem);
+    --maxw:1180px;
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:clamp(1rem,.96rem + .2vw,1.075rem);
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit}
+  :focus-visible{outline:2.5px solid var(--amber);outline-offset:3px;border-radius:2px}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--pad)}
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.7rem;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--mute);
+    margin:0 0 1.5rem;
+  }
+  .eyebrow b{color:var(--amber);font-weight:500}
+
+  h2{
+    font-family:var(--display);
+    font-variation-settings:"wdth" 84,"opsz" 44;
+    font-weight:700;
+    font-size:clamp(1.85rem,1.3rem + 2vw,2.9rem);
+    line-height:1.02;
+    letter-spacing:-.022em;
+    margin:0 0 1rem;
+  }
+  h3{
+    font-family:var(--display);
+    font-variation-settings:"wdth" 88,"opsz" 20;
+    font-weight:700;
+    font-size:1.22rem;
+    line-height:1.16;
+    letter-spacing:-.012em;
+    margin:0 0 .55rem;
+  }
+  p{margin:0 0 1rem;max-width:64ch}
+  .lede{font-size:1.1em;color:#2C3648;max-width:56ch}
+
+  /* ---------- HERO / PROBE ---------- */
+  .hero{
+    padding-top:clamp(2.5rem,7vh,5rem);
+    padding-bottom:clamp(2.5rem,6vh,4rem);
+  }
+  .probe-title{
+    font-family:var(--display);
+    font-variation-settings:"wdth" 78,"opsz" 96;
+    font-weight:800;
+    font-size:clamp(2.35rem,1rem + 7.4vw,6rem);
+    line-height:1.04;
+    letter-spacing:-.035em;
+    margin:0;
+    display:flex;
+    flex-wrap:wrap;
+    gap:.14em .05em;
+  }
+  .tok{
+    padding:.04em .11em .1em;
+    border-radius:3px;
+    background:transparent;
+    transition:background-color .38s cubic-bezier(.4,0,.2,1);
+    white-space:pre;
+  }
+
+  .rail{
+    margin:clamp(1.75rem,4vh,2.75rem) 0 0;
+    max-width:640px;
+  }
+  .rail-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    font-family:var(--mono);
+    font-size:.7rem;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--mute);
+    margin-bottom:.6rem;
+  }
+  .rail-head output{color:var(--ink);letter-spacing:.06em;text-transform:none}
+  .rail-head output em{font-style:normal;color:var(--amber)}
+
+  .rail-track{position:relative;height:34px}
+  .ticks{
+    position:absolute;inset:0;
+    display:flex;align-items:center;
+    gap:0;pointer-events:none;
+  }
+  .tick{
+    flex:1;
+    height:9px;
+    border-left:1px solid var(--rule);
+  }
+  .tick:last-child{border-right:1px solid var(--rule)}
+  .tick.on{background:var(--amber);height:20px;border-color:transparent}
+  .tick.past{background:rgba(35,45,75,.22);height:13px;border-color:transparent}
+
+  .rail-track input[type=range]{
+    position:absolute;inset:0;
+    width:100%;height:34px;
+    margin:0;padding:0;
+    background:transparent;
+    -webkit-appearance:none;appearance:none;
+    cursor:ew-resize;
+  }
+  .rail-track input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:16px;height:34px;
+    background:transparent;
+    border:0;
+  }
+  .rail-track input[type=range]::-moz-range-thumb{
+    width:16px;height:34px;background:transparent;border:0;
+  }
+  .rail-note{
+    font-family:var(--mono);font-size:.7rem;color:var(--mute);
+    margin:.55rem 0 0;letter-spacing:.02em;
+  }
+
+  .hero-lede{margin-top:clamp(2rem,5vh,3rem)}
+
+  /* ---------- FACTS ---------- */
+  .facts{
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+  }
+  .fact{padding:1.4rem 1.5rem 1.5rem;border-left:1px solid var(--rule)}
+  .fact:first-child{border-left:0;padding-left:0}
+  .fact dt{
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.15em;
+    text-transform:uppercase;color:var(--mute);margin-bottom:.45rem;
+  }
+  .fact dd{
+    margin:0;font-family:var(--display);
+    font-variation-settings:"wdth" 86,"opsz" 20;
+    font-weight:600;font-size:1.02rem;line-height:1.28;
+  }
+
+  /* ---------- SECTIONS ---------- */
+  .band{padding-block:clamp(3.25rem,8vh,5.5rem)}
+  .band--tint{background:var(--surface);border-block:1px solid var(--rule)}
+
+  .split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:clamp(1.5rem,5vw,4rem)}
+
+  .tracks{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);margin-top:2.25rem;border:1px solid var(--rule)}
+  .track{background:var(--surface);padding:1.6rem 1.4rem 1.75rem}
+  .band--tint .track{background:var(--paper)}
+  .track-tag{
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--amber);margin:0 0 .9rem;
+  }
+  .track p{font-size:.95rem;margin-bottom:.9rem}
+  .track ul{margin:0;padding-left:1.05rem;font-size:.88rem;color:var(--mute);line-height:1.5}
+  .track li{margin-bottom:.35rem}
+
+  /* ---------- SCHEDULE ---------- */
+  .days{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,4vw,3rem);margin-top:2.25rem}
+  .day{border-top:2.5px solid var(--navy);padding-top:1.1rem}
+  .day--main{border-top-color:var(--amber)}
+  .day-date{
+    font-family:var(--display);font-variation-settings:"wdth" 82,"opsz" 32;
+    font-weight:700;font-size:1.6rem;letter-spacing:-.02em;margin:0 0 .15rem;
+  }
+  .day-meta{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin:0 0 1.25rem}
+  .slot{display:grid;grid-template-columns:6.5rem 1fr;gap:.9rem;padding:.7rem 0;border-top:1px solid var(--rule)}
+  .slot time{font-family:var(--mono);font-size:.78rem;color:var(--mute);padding-top:.12em}
+  .slot p{margin:0;font-size:.94rem}
+  .slot span{display:block;font-size:.85rem;color:var(--mute)}
+
+  /* ---------- LISTS ---------- */
+  .checks{list-style:none;margin:1.25rem 0 0;padding:0}
+  .checks li{
+    padding:.7rem 0 .7rem 1.6rem;border-top:1px solid var(--rule);
+    position:relative;font-size:.96rem;
+  }
+  .checks li::before{
+    content:"";position:absolute;left:0;top:1.15rem;
+    width:7px;height:7px;background:var(--amber);
+  }
+  .checks li b{font-weight:600}
+
+  /* ---------- PEOPLE ---------- */
+  .people{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:clamp(1.5rem,4vw,3rem);
+    margin-top:2.5rem;
+  }
+  .person{max-width:22rem}
+  .person-photo{
+    position:relative;
+    width:100%;
+    max-width:15rem;
+    aspect-ratio:1/1;
+    background:var(--navy);
+    border-radius:2px;
+    overflow:hidden;
+    margin-bottom:1.1rem;
+  }
+  /* Monogram sits underneath — visible until a portrait file is dropped in. */
+  .person-photo::before{
+    content:attr(data-initials);
+    position:absolute;inset:0;
+    display:grid;place-items:center;
+    font-family:var(--display);
+    font-variation-settings:"wdth" 80,"opsz" 48;
+    font-weight:700;font-size:2.6rem;letter-spacing:-.02em;
+    color:rgba(239,242,246,.5);
+  }
+  .person-photo img{
+    position:relative;
+    display:block;
+    width:100%;height:100%;
+    object-fit:cover;
+    /* Desaturated by default so three portraits from three sources match.
+       Colour returns on hover — inactive, then activated. */
+    filter:grayscale(1) contrast(1.06);
+    transition:filter .45s ease;
+  }
+  .person:hover .person-photo img,
+  .person:focus-within .person-photo img{filter:none}
+  .person h3{margin-bottom:.3rem}
+  .person-role{
+    font-family:var(--mono);font-size:.75rem;line-height:1.55;
+    color:var(--mute);margin:0;letter-spacing:.01em;
+  }
+
+
+  .cta-band{background:var(--navy);color:#EDEFF4;padding-block:clamp(3.25rem,8vh,5rem)}
+  .cta-band h2{color:#fff}
+  .cta-band p{color:#B9C0D0}
+  .cta-band .eyebrow{color:#8C97B0}
+  .btn{
+    display:inline-block;margin-top:1.5rem;
+    background:var(--amber);color:#1A0F00;
+    font-family:var(--display);font-variation-settings:"wdth" 88,"opsz" 24;
+    font-weight:700;font-size:1.05rem;letter-spacing:-.008em;
+    padding:.85rem 2rem;border-radius:2px;text-decoration:none;
+    transition:transform .15s ease,background-color .15s ease;
+  }
+  .btn:hover{background:#FF8412;transform:translateY(-1px)}
+  .cta-sub{font-family:var(--mono);font-size:.75rem;color:#8C97B0;margin:.9rem 0 0;letter-spacing:.02em}
+
+  /* ---------- ACT DIVIDER ---------- */
+  .turn{
+    position:relative;
+    overflow:hidden;
+    background:var(--paper);
+    border-block:1px solid var(--rule);
+    padding-block:clamp(5rem,17vh,8.5rem);
+  }
+  /* Layer lines, drifting slower than the type in front of them. */
+  .turn-bg{
+    position:absolute;
+    inset:-30% 0;
+    pointer-events:none;
+    will-change:transform;
+    background:repeating-linear-gradient(
+      to bottom,
+      transparent 0 46px,
+      rgba(35,45,75,.085) 46px 48px
+    );
+    -webkit-mask-image:linear-gradient(to bottom,transparent,#000 22%,#000 78%,transparent);
+    mask-image:linear-gradient(to bottom,transparent,#000 22%,#000 78%,transparent);
+  }
+  .turn-inner{position:relative}
+  .turn h2{max-width:13ch;font-size:clamp(2.3rem,1.1rem + 5.2vw,4.5rem)}
+  .turn p{max-width:44ch}
+
+  /* ---------- TALKS ---------- */
+  .talks{
+    background:var(--navy);
+    color:#EDEFF4;
+    padding-block:clamp(3.5rem,9vh,6rem);
+  }
+  .talks h2{color:#fff}
+  .talks .eyebrow{color:#8C97B0}
+  .talks .lede{color:#B9C0D0}
+  .talks-grid{
+    display:grid;
+    grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);
+    gap:clamp(2rem,6vw,5rem);
+  }
+  /* The pinned plane: speed 0 against the cards' speed 1. */
+  .talks-aside{position:sticky;top:clamp(2rem,13vh,5.5rem);align-self:start}
+  .talks-note{
+    font-family:var(--mono);font-size:.72rem;line-height:1.6;
+    color:#8C97B0;margin:1.75rem 0 0;max-width:30ch;
+  }
+  .talks-note code{
+    color:var(--amber);background:rgba(229,114,0,.14);
+    padding:.1em .34em;border-radius:2px;font-size:.95em;
+  }
+
+  .talk{
+    padding:1.45rem 0 1.6rem;
+    border-top:1px solid rgba(237,239,244,.15);
+  }
+  .talk:last-child{border-bottom:1px solid rgba(237,239,244,.15)}
+  .talk-meta{
+    font-family:var(--mono);font-size:.67rem;letter-spacing:.15em;
+    text-transform:uppercase;color:#8C97B0;margin:0 0 .6rem;
+  }
+  .talk-name{
+    font-family:var(--display);
+    font-variation-settings:"wdth" 84,"opsz" 32;
+    font-weight:700;font-size:1.45rem;line-height:1.2;letter-spacing:-.018em;
+    color:#fff;margin:0 0 .45rem;
+  }
+  .talk-note{margin:0;font-size:.9rem;color:#B9C0D0;max-width:46ch}
+  /* Unannounced speaker — a slot, not an omission. */
+  .mask{
+    display:inline-block;
+    font-family:var(--mono);
+    font-size:1rem;font-weight:400;letter-spacing:.06em;
+    color:var(--amber);
+    background:rgba(229,114,0,.16);
+    padding:.2em .55em .26em;
+    border-radius:3px;
+  }
+
+
+  footer{padding-block:2.75rem;font-size:.85rem;color:var(--mute)}
+  .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:2rem}
+  footer h4{
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.15em;text-transform:uppercase;
+    color:var(--ink);margin:0 0 .7rem;font-weight:500;
+  }
+  footer p{margin:0 0 .4rem;max-width:38ch}
+  footer a{color:var(--ink);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:860px){
+    .facts{grid-template-columns:1fr 1fr}
+    .fact{border-left:0;border-top:1px solid var(--rule);padding-inline:0}
+    .fact:nth-child(2n){padding-left:1.25rem;border-left:1px solid var(--rule)}
+    .split,.days,.tracks,.foot-grid{grid-template-columns:1fr}
+    .tracks{gap:1px}
+    /* Sticky needs a taller neighbour to pin against — pointless in one column */
+    .talks-grid{grid-template-columns:1fr;gap:2.25rem}
+    .talks-aside{position:static}
+    .talks-note{max-width:none}
+  }
+  @media (max-width:600px){
+    .slot{grid-template-columns:1fr;gap:.15rem}
+    .probe-title{gap:.1em .04em}
+    /* Portrait left, name right — three stacked full-size cards is too much scroll */
+    .people{grid-template-columns:1fr;gap:1.4rem}
+    .person{
+      display:grid;
+      grid-template-columns:5.5rem 1fr;
+      column-gap:1.1rem;
+      align-items:center;
+      max-width:none;
+    }
+    .person-photo{grid-column:1;grid-row:1/3;margin-bottom:0}
+    .person-photo::before{font-size:1.45rem}
+    .person h3{grid-column:2;align-self:end;margin:0}
+    .person-role{grid-column:2;align-self:start;margin-top:.25rem}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<header class="hero wrap">
+  <p class="eyebrow">School of Data Science &middot; Research Interest Group <b>&mdash; Interpretability for AI Safety &amp; Science</b></p>
+
+  <h1 class="probe-title" id="probe" data-parallax="0.11" aria-label="What is the model actually doing?"></h1>
+
+  <div class="rail">
+    <div class="rail-head">
+      <span>Residual stream</span>
+      <output id="readout" for="layer">layer 00 &middot; peak <em>&ldquo; model&rdquo;</em> 0.20</output>
+    </div>
+    <div class="rail-track">
+      <div class="ticks" id="ticks" aria-hidden="true"></div>
+      <input type="range" id="layer" min="0" max="11" value="0" step="1"
+             aria-label="Layer depth — drag to move through the model">
+    </div>
+    <p class="rail-note">Drag to move through the layers. Warm tokens are where attention lands.</p>
+  </div>
+
+  <div class="hero-lede">
+    <p class="lede">A hackathon on what language models are doing inside &mdash; and on catching them when it goes wrong. Two sessions in one week. Pick a question, leave with working code and a five-minute talk.</p>
+  </div>
+</header>
+
+<!-- ===== FACTS ===== -->
+<section class="wrap" aria-label="Key details">
+  <dl class="facts">
+    <div class="fact"><dt>When</dt><dd>Fri 9 October<br>Fri 16 October, 2026</dd></div>
+    <div class="fact"><dt>Where</dt><dd>Capital One Hub</dd></div>
+    <div class="fact"><dt>Teams</dt><dd>2&ndash;4 people<br>Solo sign-ups matched</dd></div>
+    <!-- <div class="fact"><dt>Provided</dt><dd>GPU credits, starter code, lunch</dd></div> -->
+  </dl>
+</section>
+
+<!-- ===== THE BRIEF ===== -->
+<section class="band wrap">
+  <div class="split">
+    <div>
+      <p class="eyebrow">The brief</p>
+      <h2>Scaffolded, but&nbsp;open.</h2>
+    </div>
+    <div>
+      <p>On Friday you get a short list of starting problems, each one small enough to finish by Friday evening. Take one as written, bend it, or bring your own &mdash; anything that lives inside the theme is fair game.</p>
+      <p>The theme is deliberately wide: interpretability, safety evaluation, and the security of model-driven systems.</p>
+    </div>
+  </div>
+
+  <div class="tracks">
+    <article class="track">
+      <p class="track-tag">Track &mdash; Interpretability</p>
+      <h3>Open the model up</h3>
+      <p>Find the mechanism behind a behaviour and show your evidence for it.</p>
+      <ul>
+        <li>Locate a refusal direction in activation space</li>
+        <li>Patch activations to isolate a circuit</li>
+        <li>Test whether an SAE feature transfers between models</li>
+      </ul>
+    </article>
+    <article class="track">
+      <p class="track-tag">Track &mdash; Safety evaluation</p>
+      <h3>Build a scorecard</h3>
+      <p>Capture an emergent safety problem in cybersecurity and measure the model's performance.</p>
+      <ul>
+        <li>Define the scenario before evaluation</li>
+        <li>Use the LLM-judge boilerplate in the starter repo</li>
+        <li>Focus on single- or multi-agents using small models</li>
+      </ul>
+    </article>
+    <article class="track">
+      <p class="track-tag">Track &mdash; Security</p>
+      <h3>Treat it as attack surface</h3>
+      <p>Find a failure in a model-driven system, then write the test that catches it.</p>
+      <ul>
+        <li>Prompt injection through retrieved content</li>
+        <li>Tool misuse in an agent scaffold</li>
+        <li>Data exfiltration paths and their detectors</li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<!-- ===== SCHEDULE ===== -->
+<section class="band band--tint">
+  <div class="wrap">
+    <p class="eyebrow">Schedule</p>
+    <h2>Two sessions, a week apart.</h2>
+    <p class="lede">Monday sets you up. Friday is the work. Nothing is scheduled over the weekend &mdash; the gap is yours to think in, not to grind through.</p>
+
+    <div class="days">
+      <div class="day">
+        <p class="day-date">Friday 9 Oct</p>
+        <!-- TODO: confirm kickoff time with Capital One Hub booking, then replace "Time TBC" -->
+        <p class="day-meta">Kickoff &middot; 9:00 AM &ndash; 11:00 AM</p>
+        <div class="slot"><time>9:00-9:30</time><p>Problem statements released<span>The full brief, the starting problems, and the evaluation criteria.</span></p></div>
+        <div class="slot"><time>9:30-10:00</time><p>Organizer's talk<span>Lightining talks on Interpretability, Safety, and Cybersecurity.</span></p></div>
+        <div class="slot"><time>10:00-10:30</time><p>Tooling walkthrough<span>Starter repo, GPU credits, and the LLM-judge boilerplate.</span></p></div>
+        <div class="slot"><time>10:30-11:00</time><p>Networking<span>Connect with the organizers and attendess; Try leaving with a team. We will try to match solo sign-ups.</span></p></div>
+      </div>
+
+      <div class="day day--main">
+        <p class="day-date">Friday 16 Oct</p>
+        <p class="day-meta">Build day &middot; 9:00 AM &ndash; 5:00 PM</p>
+        <div class="slot"><time>9:00-9:30</time><p>Doors open, Breakfast<span>Room is yours all day.</span></p></div>
+        <div class="slot"><time>9:30-10:15am</time><p>Keynote<span>Greg Frank. MoltAI</span></p></div>
+        <div class="slot"><time>10:15-3:30pm</time><p>Build Time<span>Work on your Hackathon</span></p></div>
+        <div class="slot"><time>3:30</time><p>Presentations<span>Five minutes per team, plus questions.</span></p></div>
+        <!-- TODO: $100 gift card is pending budget approval — delete this slot if it is not confirmed -->
+        <div class="slot"><time>4:45</time><p>Results<span>Gift cards for the winning team.</span></p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SUBMIT / WHO ===== -->
+<section class="band wrap">
+  <div class="split">
+    <div>
+      <p class="eyebrow">What you hand in</p>
+      <h2>Three things, by 3:30 on Friday.</h2>
+      <ul class="checks">
+        <li><b>A five-minute presentation.</b> Slides optional, a clear demonstration is not.</li>
+        <!-- <li><b>Your code.</b> Pushed to the hackathon repo, with a README that lets someone re-run it.</li> -->
+        <!-- <li><b>A short report.</b> One or two pages: what you asked, what you did, what you found, what you would do next.</li> -->
+      </ul>
+      <!-- <p style="margin-top:1.5rem;font-size:.9rem;color:var(--mute)">Submitted work is released under the repository&rsquo;s open-source licence so other teams can build on it. You keep the credit.</p> -->
+    </div>
+    <div>
+      <p class="eyebrow">Who it&rsquo;s for</p>
+      <h2>Bring Python. That&rsquo;s the bar.</h2>
+      <p>Open to graduate students across data science, computer science, and engineering. Undergraduates with the relevant coursework are welcome. You do not need prior interpretability experience. The starter repo covers the basic tooling and walkthrough covers the starter repo.</p>
+      <!-- <p>Bring a laptop. Everything heavier runs on the compute we provide, so a modest machine is fine.</p> -->
+    </div>
+  </div>
+</section>
+
+<!-- ===== ORGANISERS ===== -->
+<section class="band band--tint" id="organisers">
+  <div class="wrap">
+    <p class="eyebrow">Organisers</p>
+    <h2>Who&rsquo;s running it.</h2>
+    <div class="people">
+      <!-- TODO: drop the three portraits into docs/img/ — see docs/img/README.md for specs.
+           Until they exist, each card falls back to a monogram and the page still reads fine. -->
+      <article class="person">
+        <div class="person-photo" data-initials="CA">
+          <a href="https://chirag-agarwall.github.io/" target="_blank"><img src="img/chirag.png" alt="Chirag Agarwal" loading="lazy" onerror="this.remove()"></a>
+        </div>
+        <h3>Chirag Agarwal</h3>
+        <!-- TODO: optional — add a one-line research description under each name -->
+        <p class="person-role">School of Data Science<br>Computer Science</p>
+      </article>
+
+      <article class="person">
+        <div class="person-photo" data-initials="YA">
+          <a href="https://yyahn.com/about/" target="_blank"><img src="img/yy.png" alt="Yong-Yeol Ahn" loading="lazy" onerror="this.remove()"></a>
+        </div>
+        <h3>Yong-Yeol Ahn</h3>
+        <p class="person-role">School of Data Science</p>
+      </article>
+
+      <article class="person">
+        <div class="person-photo" data-initials="WH">
+          <a href="https://www.cs.virginia.edu/~hur7wv/" target="_blank"><img src="img/wajih.png" alt="Wajih Ul Hassan" loading="lazy" onerror="this.remove()"></a>
+        </div>
+        <h3>Wajih Ul Hassan</h3>
+        <p class="person-role">School of Data Science<br>Computer Science</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section class="cta-band">
+  <div class="wrap">
+    <p class="eyebrow">Registration</p>
+    <h2>Two minutes. No team or idea required yet.</h2>
+    <p class="lede">
+      Registration closes on September 25th &middot; Places are capped by room capacity.
+    <!-- Tell us your name and your email, and which sessions you can make. Everything else on the form is optional and helps us balance the teams. -->
+    </p>
+    <!-- TODO: replace with the live Google Form URL before announcing -->
+    <a class="btn" href="#" id="register-link">Register</a>
+  </div>
+</section>
+
+<!-- ===== THE TURN ===== -->
+<section class="turn">
+  <div class="turn-bg" data-parallax="0.34" aria-hidden="true"></div>
+  <div class="turn-inner wrap">
+    <p class="eyebrow">The rest of the year</p>
+    <h2>That&rsquo;s October.</h2>
+    <p class="lede">The RIG runs seminars through both semesters, brings in a keynote, and does this again in the spring. Here&rsquo;s the calendar.</p>
+  </div>
+</section>
+
+<!-- ===== TALKS ===== -->
+<section class="talks" id="talks">
+  <div class="wrap talks-grid">
+    <div class="talks-aside">
+      <p class="eyebrow">Seminars &amp; talks</p>
+      <h2>Four seminars, one keynote.</h2>
+      <p class="lede">Virtual where it lets us reach further, in person where it&rsquo;s worth the room. Open to everyone &mdash; no registration needed for the seminars.</p>
+      <p class="talks-note">Speakers we haven&rsquo;t confirmed yet show as <code>[TBD]</code>. They get filled in as invitations land.</p>
+    </div>
+
+    <div class="talks-list">
+      <article class="talk">
+        <p class="talk-meta">Fall 2026 &middot; In person &middot; Keynote</p>
+        <p class="talk-name"><span class="mask">Greg Frank</span></p>
+        <p class="talk-note">Co-founder and Chief Scientist at <a href="https://moltaicorp.com/" target="_blank">MoltAI</a></p>
+      </article>
+
+      <article class="talk">
+        <p class="talk-meta">November 2026 &middot; Virtual</p>
+        <p class="talk-name"><span class="mask">Snowcrash Lab</span></p>
+        <p class="talk-note"></p>
+      </article>
+
+      <article class="talk">
+        <p class="talk-meta">February &ndash; April 2027 &middot; Virtual</p>
+        <p class="talk-name"><span class="mask">[TBD]</span></p>
+        <p class="talk-note">Spring seminar, first of two.</p>
+      </article>
+
+      <article class="talk">
+        <p class="talk-meta">February &ndash; April 2027 &middot; Virtual</p>
+        <p class="talk-name"><span class="mask">[TBD]</span></p>
+        <p class="talk-note">Spring seminar, second of two.</p>
+      </article>
+
+      <article class="talk">
+        <p class="talk-meta">March 2027 &middot; Capital One Hub</p>
+        <p class="talk-name">Multimodal Interpretability Challenges</p>
+        <p class="talk-note">The spring hackathon. Same format as October, different problem space &mdash; interpretability when the model isn&rsquo;t only reading text.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="wrap">
+  <div class="foot-grid">
+    <div>
+      <h4>Hosted by</h4>
+      <p>Interpretability for AI Safety and Science &mdash; a Research Interest Group at the School of Data Science.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var TOKENS = ["What"," is"," the"," model"," act","ually"," doing","?"];
+  var ACT = [
+    [ .15,-.10,-.15, .20, .10,-.05, .12,-.20],
+    [ .22,-.18,-.20, .28, .14, .02, .15,-.25],
+    [ .30,-.22,-.28, .34, .20, .08, .18,-.30],
+    [ .28,-.30,-.34, .42, .26, .14, .22,-.28],
+    [ .20,-.35,-.40, .55, .34, .20, .30,-.22],
+    [ .12,-.30,-.42, .66, .45, .30, .38,-.15],
+    [ .05,-.25,-.38, .74, .58, .42, .50,-.10],
+    [-.05,-.20,-.30, .80, .66, .55, .62, .05],
+    [-.12,-.15,-.25, .85, .70, .62, .75, .20],
+    [-.18,-.10,-.20, .88, .68, .60, .86, .35],
+    [-.22,-.08,-.15, .90, .60, .52, .94, .50],
+    [-.25,-.05,-.10, .92, .50, .44,1.00, .62]
+  ];
+
+  var probe    = document.getElementById('probe');
+  var slider   = document.getElementById('layer');
+  var ticksEl  = document.getElementById('ticks');
+  var readout  = document.getElementById('readout');
+  if(!probe || !slider) return;
+
+  var spans = TOKENS.map(function(t){
+    var s = document.createElement('span');
+    s.className = 'tok';
+    s.textContent = t;
+    probe.appendChild(s);
+    return s;
+  });
+
+  var ticks = ACT.map(function(){
+    var d = document.createElement('div');
+    d.className = 'tick';
+    ticksEl.appendChild(d);
+    return d;
+  });
+
+  function paint(L){
+    var row = ACT[L], peak = 0, peakIdx = 0;
+    for(var i=0;i<row.length;i++){
+      var v = row[i];
+      spans[i].style.backgroundColor = v >= 0
+        ? 'rgba(229,114,0,'  + (v * 0.72).toFixed(3) + ')'
+        : 'rgba(35,45,75,'   + (-v * 0.20).toFixed(3) + ')';
+      if(v > peak){ peak = v; peakIdx = i; }
+    }
+    for(var k=0;k<ticks.length;k++){
+      ticks[k].className = 'tick' + (k === L ? ' on' : (k < L ? ' past' : ''));
+    }
+    readout.innerHTML = 'layer ' + String(L).padStart(2,'0') +
+      ' &middot; peak <em>&ldquo;' + TOKENS[peakIdx].replace(/ /g,'&nbsp;') + '&rdquo;</em> ' +
+      peak.toFixed(2);
+  }
+
+  slider.addEventListener('input', function(){ paint(+slider.value); });
+  paint(0);
+
+  // Page-load sweep: run the probe through the stack once, then settle.
+  var calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(calm){ slider.value = 11; paint(11); return; }
+
+  var L = 0;
+  var sweep = setInterval(function(){
+    L++;
+    if(L > 11){ clearInterval(sweep); return; }
+    slider.value = L;
+    paint(L);
+  }, 230);
+
+  // Hand control over the moment anyone touches it — pointer or keyboard.
+  function yieldSweep(){ clearInterval(sweep); }
+  slider.addEventListener('pointerdown', yieldSweep);
+  slider.addEventListener('keydown', yieldSweep);
+})();
+</script>
+
+<script>
+/* Parallax: one rAF-throttled listener, transforms only — no layout reads
+   per element beyond a single getBoundingClientRect, and nothing that can
+   force a synchronous reflow mid-scroll.
+
+   Off entirely for reduced-motion and for narrow screens, where momentum
+   scrolling makes differential movement stutter rather than read as depth. */
+(function(){
+  var els = Array.prototype.slice.call(document.querySelectorAll('[data-parallax]'));
+  if(!els.length) return;
+
+  var calm   = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var narrow = window.matchMedia('(max-width: 768px)');
+  var ticking = false, live = false;
+
+  function frame(){
+    ticking = false;
+    var vh = window.innerHeight;
+    for(var i = 0; i < els.length; i++){
+      var el = els[i], r = el.getBoundingClientRect();
+      if(r.bottom < -240 || r.top > vh + 240) continue;      // offscreen
+      var progress = (vh / 2 - (r.top + r.height / 2)) / vh; // ~ -1 .. 1
+      var shift = progress * parseFloat(el.getAttribute('data-parallax')) * 100;
+      el.style.transform = 'translate3d(0,' + shift.toFixed(1) + 'px,0)';
+    }
+  }
+
+  function onScroll(){
+    if(!ticking){ ticking = true; requestAnimationFrame(frame); }
+  }
+
+  function sync(){
+    var wanted = !calm.matches && !narrow.matches;
+    if(wanted === live) return;
+    live = wanted;
+    if(wanted){
+      window.addEventListener('scroll', onScroll, {passive:true});
+      window.addEventListener('resize', onScroll, {passive:true});
+      frame();
+    }else{
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      for(var i = 0; i < els.length; i++) els[i].style.transform = '';
+    }
+  }
+
+  [calm, narrow].forEach(function(mq){
+    mq.addEventListener ? mq.addEventListener('change', sync) : mq.addListener(sync);
+  });
+  sync();
+})();
+</script>
+
+</body>
+</html>
