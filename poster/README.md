@@ -28,9 +28,10 @@ The palette uses official UVA Blue `#232D4B` and UVA Orange `#E57200`. Keep logo
 ## Logos
 
 - `assets/uva-sds-logo.png`: official primary color logo from the [School of Data Science brand-resources page](https://datascience.virginia.edu/pages/school-brand-resources).
+- `assets/uva-cs-logo.png`: UVA Engineering / Department of Computer Science lockup, supplied by the department.
 - `assets/vaisi-logo.png`: full VAISI logo image served by the [VAISI homepage](https://vaisi.org/).
 
-Both are displayed unmodified on white cards. Do not recolor, crop, or add effects.
+All three are displayed unmodified on white cards. Do not recolor, crop, or add effects.
 
 ## Background generation
 

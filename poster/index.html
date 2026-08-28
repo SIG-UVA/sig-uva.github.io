@@ -240,7 +240,7 @@
       display: grid;
       gap: 5px;
       align-self: start;
-      grid-template-rows: 8px 96px;
+      grid-template-rows: 8px auto;
     }
 
     .partners-label {
@@ -275,10 +275,9 @@
 
     .logo-stack {
       display: grid;
-      grid-template-rows: 1fr 1fr;
+      grid-template-rows: repeat(3, 45.5px);
       gap: 5px;
       width: 176px;
-      height: 96px;
     }
 
     .qr {
@@ -286,7 +285,7 @@
       gap: 5px;
       justify-items: start;
       align-self: start;
-      grid-template-rows: 8px 96px;
+      grid-template-rows: 8px 146.5px;
       color: var(--cream);
       font-family: var(--mono);
       font-size: 8px;
@@ -297,6 +296,7 @@
 
     .qr img {
       display: block;
+      align-self: end;
       width: 96px;
       height: 96px;
       padding: 6px;
@@ -360,6 +360,9 @@
           <div class="logo-stack">
             <div class="logo-card">
               <img src="assets/uva-sds-logo.png" alt="University of Virginia School of Data Science">
+            </div>
+            <div class="logo-card">
+              <img src="assets/uva-cs-logo.png" alt="University of Virginia Engineering, Department of Computer Science">
             </div>
             <div class="logo-card logo-card--vaisi">
               <img src="assets/vaisi-logo.png" alt="Virginia AI Security Initiative">
