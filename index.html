@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>What Is the Model Actually Doing? — SDS RIG Interpretability Hackathon</title>
-<meta name="description" content="A hackathon on interpretability, safety evaluation, and security for language models. Monday 19 and Friday 23 October 2026, Capital One Hub.">
+<title>Hackathon: What Is the Model Actually Doing? — SDS RIG Interpretability</title>
+<meta name="description" content="A hackathon on interpretability, safety evaluation, and security for language models. Fridays 9 and 16 October 2026, Capital One Hub.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -90,6 +90,7 @@
     flex-wrap:wrap;
     gap:.14em .05em;
   }
+  .tok--prefix{color:var(--mute);font-weight:600}
   .tok{
     padding:.04em .11em .1em;
     border-radius:3px;
@@ -180,7 +181,8 @@
 
   .split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:clamp(1.5rem,5vw,4rem)}
 
-  .tracks{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);margin-top:2.25rem;border:1px solid var(--rule)}
+  .tracks-head{margin:2.25rem 0 .9rem}
+  .tracks{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
   .track{background:var(--surface);padding:1.6rem 1.4rem 1.75rem}
   .band--tint .track{background:var(--paper)}
   .track-tag{
@@ -408,7 +410,7 @@
 <header class="hero wrap">
   <p class="eyebrow">School of Data Science &middot; Research Interest Group <b>&mdash; Interpretability for AI Safety &amp; Science</b></p>
 
-  <h1 class="probe-title" id="probe" data-parallax="0.11" aria-label="What is the model actually doing?"></h1>
+  <h1 class="probe-title" id="probe" data-parallax="0.11" aria-label="Hackathon: What is the model actually doing?"><span class="tok tok--prefix">Hackathon:</span></h1>
 
   <div class="rail">
     <div class="rail-head">
@@ -424,7 +426,7 @@
   </div>
 
   <div class="hero-lede">
-    <p class="lede">A hackathon on what language models are doing inside &mdash; and on catching them when it goes wrong. Two sessions in one week. Pick a question, leave with working code and a five-minute talk.</p>
+    <p class="lede">A hackathon on what language models do inside, and on catching them when it goes wrong. Two Friday sessions, a week apart. Pick a question, leave with working code and a five-minute talk.</p>
   </div>
 </header>
 
@@ -438,19 +440,18 @@
   </dl>
 </section>
 
-<!-- ===== THE BRIEF ===== -->
+<!-- ===== THEME ===== -->
 <section class="band wrap">
   <div class="split">
     <div>
-      <p class="eyebrow">The brief</p>
-      <h2>Scaffolded, but&nbsp;open.</h2>
+      <h2>Theme: Interpretability, safety evaluation, and security of AI&nbsp;systems</h2>
     </div>
     <div>
-      <p>On Friday you get a short list of starting problems, each one small enough to finish by Friday evening. Take one as written, bend it, or bring your own &mdash; anything that lives inside the theme is fair game.</p>
-      <p>The theme is deliberately wide: interpretability, safety evaluation, and the security of model-driven systems.</p>
+      <p>At the kickoff you get a short list of starting problems, each small enough to finish in a day. Take one as written, change it, or bring your own &mdash; anything within the theme works.</p>
     </div>
   </div>
 
+  <p class="eyebrow tracks-head">Potential projects</p>
   <div class="tracks">
     <article class="track">
       <p class="track-tag">Track &mdash; Interpretability</p>
@@ -490,7 +491,7 @@
   <div class="wrap">
     <p class="eyebrow">Schedule</p>
     <h2>Two sessions, a week apart.</h2>
-    <p class="lede">Monday sets you up. Friday is the work. Nothing is scheduled over the weekend &mdash; the gap is yours to think in, not to grind through.</p>
+    <p class="lede">The first Friday sets you up. The second is the build day.</p>
 
     <div class="days">
       <div class="day">
@@ -498,9 +499,9 @@
         <!-- TODO: confirm kickoff time with Capital One Hub booking, then replace "Time TBC" -->
         <p class="day-meta">Kickoff &middot; 9:00 AM &ndash; 11:00 AM</p>
         <div class="slot"><time>9:00-9:30</time><p>Problem statements released<span>The full brief, the starting problems, and the evaluation criteria.</span></p></div>
-        <div class="slot"><time>9:30-10:00</time><p>Organizer's talk<span>Lightining talks on Interpretability, Safety, and Cybersecurity.</span></p></div>
+        <div class="slot"><time>9:30-10:00</time><p>Organizers' talks<span>Lightning talks on interpretability, safety, and cybersecurity.</span></p></div>
         <div class="slot"><time>10:00-10:30</time><p>Tooling walkthrough<span>Starter repo, GPU credits, and the LLM-judge boilerplate.</span></p></div>
-        <div class="slot"><time>10:30-11:00</time><p>Networking<span>Connect with the organizers and attendess; Try leaving with a team. We will try to match solo sign-ups.</span></p></div>
+        <div class="slot"><time>10:30-11:00</time><p>Networking<span>Meet the organizers and other attendees and form a team. We will match solo sign-ups.</span></p></div>
       </div>
 
       <div class="day day--main">
@@ -508,7 +509,7 @@
         <p class="day-meta">Build day &middot; 9:00 AM &ndash; 5:00 PM</p>
         <div class="slot"><time>9:00-9:30</time><p>Doors open, Breakfast<span>Room is yours all day.</span></p></div>
         <div class="slot"><time>9:30-10:15am</time><p>Keynote<span>Greg Frank. MoltAI</span></p></div>
-        <div class="slot"><time>10:15-3:30pm</time><p>Build Time<span>Work on your Hackathon</span></p></div>
+        <div class="slot"><time>10:15-3:30pm</time><p>Build time<span>Work on your project.</span></p></div>
         <div class="slot"><time>3:30</time><p>Presentations<span>Five minutes per team, plus questions.</span></p></div>
         <!-- TODO: $100 gift card is pending budget approval — delete this slot if it is not confirmed -->
         <div class="slot"><time>4:45</time><p>Results<span>Gift cards for the winning team.</span></p></div>
@@ -522,9 +523,9 @@
   <div class="split">
     <div>
       <p class="eyebrow">What you hand in</p>
-      <h2>Three things, by 3:30 on Friday.</h2>
+      <h2>A five-minute presentation at 3:30 on the build day.</h2>
       <ul class="checks">
-        <li><b>A five-minute presentation.</b> Slides optional, a clear demonstration is not.</li>
+        <li><b>Five minutes per team, plus questions.</b> Slides are optional. Show what you built and what you found.</li>
         <!-- <li><b>Your code.</b> Pushed to the hackathon repo, with a README that lets someone re-run it.</li> -->
         <!-- <li><b>A short report.</b> One or two pages: what you asked, what you did, what you found, what you would do next.</li> -->
       </ul>
@@ -532,8 +533,8 @@
     </div>
     <div>
       <p class="eyebrow">Who it&rsquo;s for</p>
-      <h2>Bring Python. That&rsquo;s the bar.</h2>
-      <p>Open to graduate students across data science, computer science, and engineering. Undergraduates with the relevant coursework are welcome. You do not need prior interpretability experience. The starter repo covers the basic tooling and walkthrough covers the starter repo.</p>
+      <h2>Any student comfortable with Python.</h2>
+      <p>Open to graduate students in data science, computer science, and engineering, and to undergraduates with relevant coursework. No prior interpretability experience is needed; the tooling walkthrough on the first day covers the starter repo.</p>
       <!-- <p>Bring a laptop. Everything heavier runs on the compute we provide, so a modest machine is fine.</p> -->
     </div>
   </div>
@@ -542,8 +543,7 @@
 <!-- ===== ORGANISERS ===== -->
 <section class="band band--tint" id="organisers">
   <div class="wrap">
-    <p class="eyebrow">Organisers</p>
-    <h2>Who&rsquo;s running it.</h2>
+    <h2>Organizers</h2>
     <div class="people">
       <!-- TODO: drop the three portraits into docs/img/ — see docs/img/README.md for specs.
            Until they exist, each card falls back to a monogram and the page still reads fine. -->
@@ -594,8 +594,8 @@
   <div class="turn-bg" data-parallax="0.34" aria-hidden="true"></div>
   <div class="turn-inner wrap">
     <p class="eyebrow">The rest of the year</p>
-    <h2>That&rsquo;s October.</h2>
-    <p class="lede">The RIG runs seminars through both semesters, brings in a keynote, and does this again in the spring. Here&rsquo;s the calendar.</p>
+    <h2>Look for the other events.</h2>
+    <p class="lede">The RIG runs seminars through both semesters and a second hackathon in the spring.</p>
   </div>
 </section>
 
