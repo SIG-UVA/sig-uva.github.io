@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fall 2026 AI Safety Hackathon poster</title>
+  <style>
+    :root {
+      /* Official UVA brand colors: https://brand.virginia.edu/design-assets/colors */
+      --uva-blue: #232d4b;
+      --uva-orange: #e57200;
+      --cream: #faf7f1;
+      --pale-orange: #f9dcbf;
+      --display: "Avenir Next Condensed", "Arial Narrow", sans-serif;
+      --body: "Avenir Next", "Helvetica Neue", sans-serif;
+      --mono: "SFMono-Regular", "SF Mono", Menlo, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: #111725;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      color: var(--cream);
+      font-family: var(--body);
+    }
+
+    .poster {
+      position: relative;
+      isolation: isolate;
+      width: 816px;
+      height: 1056px;
+      overflow: hidden;
+      background: #061021 url("assets/ai-interpretability-bg.png") 58% 50% / cover no-repeat;
+    }
+
+    .poster::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(90deg, rgba(3, 12, 28, .98) 0%, rgba(3, 12, 28, .91) 43%, rgba(3, 12, 28, .42) 72%, rgba(3, 12, 28, .12) 100%),
+        linear-gradient(180deg, rgba(3, 12, 28, .18) 0%, rgba(3, 12, 28, .08) 55%, rgba(3, 12, 28, .94) 89%, #030c1c 100%);
+    }
+
+    .accent-rule {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 10px;
+      height: 100%;
+      background: var(--uva-orange);
+    }
+
+    .content {
+      height: 100%;
+      padding: 42px 48px 35px 58px;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      max-width: 650px;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 1.35;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .brand strong { color: var(--pale-orange); }
+
+    .hero { margin-top: 32px; }
+
+    .season {
+      margin: 0 0 10px;
+      color: var(--uva-orange);
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 600px;
+      margin: 0;
+      font-family: var(--display);
+      font-size: 76px;
+      font-weight: 800;
+      line-height: .83;
+      letter-spacing: -.055em;
+      text-transform: uppercase;
+    }
+
+    h1 .warm { color: var(--pale-orange); }
+
+    .question {
+      max-width: 540px;
+      margin: 21px 0 0;
+      color: #fff;
+      font-family: var(--display);
+      font-size: 25px;
+      font-weight: 650;
+      line-height: 1.05;
+      letter-spacing: -.025em;
+    }
+
+    .theme {
+      max-width: 540px;
+      margin: 15px 0 0;
+      color: rgba(250, 247, 241, .82);
+      font-size: 14px;
+      line-height: 1.42;
+    }
+
+    .theme b { color: var(--cream); font-weight: 600; }
+
+    .tracks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      max-width: 560px;
+      margin-top: 15px;
+    }
+
+    .track {
+      padding: 5px 8px 6px;
+      border: 1px solid rgba(249, 220, 191, .43);
+      background: rgba(35, 45, 75, .56);
+      color: var(--pale-orange);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .045em;
+      text-transform: uppercase;
+    }
+
+    .details {
+      align-self: end;
+      display: grid;
+      grid-template-columns: 1fr 1fr .86fr;
+      gap: 10px;
+      width: 100%;
+      margin-bottom: 22px;
+    }
+
+    .detail {
+      min-height: 114px;
+      padding: 13px 14px 12px;
+      border-top: 2px solid rgba(255, 255, 255, .62);
+      background: rgba(4, 15, 34, .78);
+      backdrop-filter: blur(8px);
+    }
+
+    .detail--main { border-top-color: var(--uva-orange); }
+
+    .detail--keynote {
+      border-top-color: var(--uva-orange);
+      background: rgba(27, 31, 50, .9);
+    }
+
+    .detail-label {
+      margin: 0 0 7px;
+      color: var(--uva-orange);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .detail h2 {
+      margin: 0 0 4px;
+      font-family: var(--display);
+      font-size: 21px;
+      font-weight: 750;
+      line-height: 1;
+      letter-spacing: -.025em;
+    }
+
+    .detail p {
+      margin: 0;
+      color: rgba(250, 247, 241, .78);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .footer {
+      display: grid;
+      grid-template-columns: 1fr 150px auto;
+      align-items: end;
+      gap: 15px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, .22);
+    }
+
+    .cta {
+      display: grid;
+      gap: 8px;
+      align-content: end;
+    }
+
+    .deadline {
+      margin: 0;
+      color: var(--uva-orange);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .cta h2 {
+      margin: 0;
+      font-family: var(--display);
+      font-size: 23px;
+      line-height: .98;
+      letter-spacing: -.025em;
+    }
+
+    .cta p {
+      max-width: 430px;
+      margin: 0;
+      color: rgba(250, 247, 241, .76);
+      font-size: 11.5px;
+      line-height: 1.35;
+    }
+
+    .partners {
+      display: grid;
+      gap: 5px;
+      align-self: start;
+      grid-template-rows: 8px auto;
+    }
+
+    .partners-label {
+      color: var(--cream);
+      font-family: var(--mono);
+      font-size: 8px;
+      line-height: 8px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .logo-card {
+      display: grid;
+      place-items: center;
+      width: 150px;
+      height: 36px;
+      padding: 5px 7px;
+      background: #fff;
+    }
+
+    .logo-card img {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .logo-card--vaisi img {
+      width: 89px;
+      height: 27px;
+    }
+
+    .logo-stack {
+      display: grid;
+      grid-template-rows: repeat(3, 36px);
+      gap: 5px;
+      width: 150px;
+    }
+
+    .qr {
+      display: grid;
+      gap: 5px;
+      justify-items: start;
+      align-self: start;
+      grid-template-rows: 8px 118px;
+      color: var(--cream);
+      font-family: var(--mono);
+      font-size: 8px;
+      line-height: 8px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .qr img {
+      display: block;
+      align-self: end;
+      width: 96px;
+      height: 96px;
+      padding: 6px;
+      background: var(--cream);
+    }
+
+    @page { size: letter portrait; margin: 0; }
+
+    @media print {
+      html, body { width: 8.5in; height: 11in; background: transparent; }
+      .poster { width: 8.5in; height: 11in; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <main class="poster">
+    <div class="accent-rule" aria-hidden="true"></div>
+    <div class="content">
+      <header class="brand">
+        <span><strong>UVA School of Data Science</strong><br>Interpretability for AI Safety &amp; Science RIG</span>
+      </header>
+
+      <section class="hero">
+        <p class="season">Fall 2026</p>
+        <h1>AI Safety<br><span class="warm">Hackathon</span></h1>
+        <p class="question">What is the model actually doing?</p>
+        <p class="theme"><b>Open the model. Stress-test the system. Build the evaluation.</b><br>Bring a question or start from a scaffolded problem.</p>
+        <div class="tracks" aria-label="Project tracks">
+          <span class="track">Interpretability</span>
+          <span class="track">Safety evaluation</span>
+          <span class="track">Cybersecurity</span>
+        </div>
+      </section>
+
+      <section class="details" aria-label="Event schedule">
+        <article class="detail">
+          <p class="detail-label">Kickoff</p>
+          <h2>Friday, Oct 9</h2>
+          <p>9:00–11:00 AM<br>Capital One Hub<br>Theme, tools, and team formation</p>
+        </article>
+        <article class="detail detail--main">
+          <p class="detail-label">Build day + talks</p>
+          <h2>Friday, Oct 16</h2>
+          <p>9:00 AM–5:00 PM<br>Capital One Hub</p>
+        </article>
+        <article class="detail detail--keynote">
+          <p class="detail-label">Featured keynote speaker</p>
+          <h2>Greg Frank</h2>
+          <p>Co-founder and Chief Scientist<br>MoltAI<br>Oct 16 · 9:30 AM</p>
+        </article>
+      </section>
+
+      <footer class="footer">
+        <div class="cta">
+          <p class="deadline">Register by September 25</p>
+          <h2>No team or prior interpretability experience required.</h2>
+          <p>Teams of 2–4; solo sign-ups matched. Starter code, GPU credits, and five-minute team presentations.</p>
+        </div>
+        <div class="partners" aria-label="Presenting organizations">
+          <span class="partners-label">Presented by</span>
+          <div class="logo-stack">
+            <div class="logo-card">
+              <img src="assets/uva-sds-logo.png" alt="University of Virginia School of Data Science">
+            </div>
+            <div class="logo-card">
+              <img src="assets/uva-cs-logo.png" alt="University of Virginia Engineering, Department of Computer Science">
+            </div>
+            <div class="logo-card logo-card--vaisi">
+              <img src="assets/vaisi-logo.png" alt="Virginia AI Security Initiative">
+            </div>
+          </div>
+        </div>
+        <div class="qr">
+          <span>Registration</span>
+          <img src="assets/qr-info.svg" alt="QR code linking to sig-uva.github.io">
+        </div>
+      </footer>
+    </div>
+  </main>
+</body>
+</html>
