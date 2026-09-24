@@ -376,5 +376,11 @@
       </footer>
     </div>
   </main>
+<script>
+  // Open with ?nodeadline to build the variant without the registration deadline.
+  if (new URLSearchParams(location.search).has("nodeadline")) {
+    document.querySelector(".deadline").remove();
+  }
+</script>
 </body>
 </html>

@@ -4,9 +4,11 @@ set -euo pipefail
 poster_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 chrome_bin=${CHROME_BIN:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}
 registration_url=""
+variant=""
+query=""
 
 usage() {
-  echo "Usage: $0 [--qr URL]" >&2
+  echo "Usage: $0 [--qr URL] [--no-deadline]" >&2
 }
 
 while (($#)); do
@@ -15,6 +17,11 @@ while (($#)); do
       [[ $# -ge 2 ]] || { usage; exit 2; }
       registration_url=$2
       shift 2
+      ;;
+    --no-deadline)
+      variant="-no-deadline"
+      query="?nodeadline"
+      shift
       ;;
     -h|--help)
       usage
@@ -48,7 +55,9 @@ if [[ -n "$registration_url" ]]; then
   qrencode -t SVG -m 2 -o "$poster_dir/assets/qr-info.svg" "$registration_url"
 fi
 
-poster_url="file://$poster_dir/index.html"
+poster_url="file://$poster_dir/index.html$query"
+png_out="$poster_dir/poster$variant.png"
+pdf_out="$poster_dir/poster$variant.pdf"
 check_dir=$(mktemp -d /tmp/sig-uva-poster-build.XXXXXX)
 cleanup() {
   if command -v trash >/dev/null; then
@@ -65,7 +74,7 @@ if ! "$chrome_bin" \
   --hide-scrollbars \
   --window-size=816,1056 \
   --force-device-scale-factor=1 \
-  --screenshot="$poster_dir/poster.png" \
+  --screenshot="$png_out" \
   "$poster_url" >"$check_dir/chrome-png.log" 2>&1; then
   cat "$check_dir/chrome-png.log" >&2
   exit 1
@@ -90,20 +99,20 @@ perl -0pi -e 's/D:\d{14}\+00\x2700\x27/D:20000101000000+00\x2700\x27/g; s{/ID \[
 # This PDF is unencrypted; a fixed document ID makes byte-for-byte rebuilds
 # reproducible without weakening any encryption.
 qpdf --static-id --object-streams=generate \
-  "$check_dir/poster-qdf.pdf" "$poster_dir/poster.pdf"
+  "$check_dir/poster-qdf.pdf" "$pdf_out"
 
-page_size=$(pdfinfo "$poster_dir/poster.pdf" | awk -F: '/^Page size/ {gsub(/^[[:space:]]+/, "", $2); print $2}')
+page_size=$(pdfinfo "$pdf_out" | awk -F: '/^Page size/ {gsub(/^[[:space:]]+/, "", $2); print $2}')
 [[ "$page_size" == 612\ x\ 792\ pts* ]] || {
   echo "Unexpected PDF page size: $page_size" >&2
   exit 1
 }
 
 pdftoppm -png -singlefile -r 96 \
-  "$poster_dir/poster.pdf" \
+  "$pdf_out" \
   "$check_dir/poster-pdf" >/dev/null 2>&1
 
 uv run --with opencv-python-headless python - \
-  "$poster_dir/poster.png" \
+  "$png_out" \
   "$check_dir/poster-pdf.png" \
   "$registration_url" <<'PY'
 import sys
@@ -117,7 +126,14 @@ for label, path in (("PNG", png_path), ("PDF", pdf_path)):
         raise SystemExit(f"Could not read {label}: {path}")
     if image.shape[1::-1] != (816, 1056):
         raise SystemExit(f"Unexpected {label} dimensions: {image.shape[1]} x {image.shape[0]}")
-    value, _, _ = cv2.QRCodeDetector().detectAndDecode(image)
+    # The QR is small at 96 dpi and OpenCV's detector is scale-sensitive, so
+    # try a few upscales and accept the first decode.
+    value = ""
+    for scale in (1, 2, 3, 4):
+        upscaled = cv2.resize(image, None, fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
+        value, _, _ = cv2.QRCodeDetector().detectAndDecode(upscaled)
+        if value:
+            break
     if not value:
         raise SystemExit(f"Could not decode QR from {label}")
     if expected_url and value != expected_url:
@@ -126,5 +142,5 @@ for label, path in (("PNG", png_path), ("PDF", pdf_path)):
 PY
 
 echo "PDF: US Letter, 8.5 x 11 in ($page_size)"
-echo "Built: $poster_dir/poster.png"
-echo "Built: $poster_dir/poster.pdf"
+echo "Built: $png_out"
+echo "Built: $pdf_out"
