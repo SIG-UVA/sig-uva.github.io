@@ -280,6 +280,25 @@
       width: 150px;
     }
 
+    .poster--nologos .footer { grid-template-columns: 1fr 205px auto; }
+    .poster--nologos .logo-stack { display: none; }
+    .poster--nologos .sponsor-list { display: grid; }
+
+    .sponsor-list {
+      display: none;
+      gap: 8px;
+      margin: 0;
+      padding: 7px 0 0 10px;
+      border-left: 2px solid var(--uva-orange);
+      list-style: none;
+      color: var(--cream);
+      font-family: var(--display);
+      font-size: 15px;
+      font-weight: 650;
+      line-height: 1.05;
+      letter-spacing: -.01em;
+    }
+
     .qr {
       display: grid;
       gap: 5px;
@@ -368,6 +387,11 @@
               <img src="assets/vaisi-logo.png" alt="Virginia AI Security Initiative">
             </div>
           </div>
+          <ul class="sponsor-list">
+            <li>UVA School of Data Science</li>
+            <li>UVA Computer Science</li>
+            <li>Virginia AI Security Initiative</li>
+          </ul>
         </div>
         <div class="qr">
           <span>Registration</span>
@@ -377,9 +401,14 @@
     </div>
   </main>
 <script>
-  // Open with ?nodeadline to build the variant without the registration deadline.
-  if (new URLSearchParams(location.search).has("nodeadline")) {
+  // Variants: ?nodeadline drops the registration deadline; ?nologos lists the
+  // presenting organizations as text instead of logos. They can be combined.
+  const params = new URLSearchParams(location.search);
+  if (params.has("nodeadline")) {
     document.querySelector(".deadline").remove();
+  }
+  if (params.has("nologos")) {
+    document.querySelector(".poster").classList.add("poster--nologos");
   }
 </script>
 </body>
