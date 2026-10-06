@@ -161,7 +161,8 @@
     border-top:1px solid var(--rule);
     border-bottom:1px solid var(--rule);
     display:grid;
-    grid-template-columns:repeat(4,1fr);
+    /* Three facts, three columns. Adding a fourth? Change this too. */
+    grid-template-columns:repeat(3,1fr);
   }
   .fact{padding:1.4rem 1.5rem 1.5rem;border-left:1px solid var(--rule)}
   .fact:first-child{border-left:0;padding-left:0}
@@ -193,6 +194,69 @@
   .track ul{margin:0;padding-left:1.05rem;font-size:.88rem;color:var(--mute);line-height:1.5}
   .track li{margin-bottom:.35rem}
 
+  /* ---------- THRUST CARDS ---------- */
+  /* Flex, not grid: five cards wrap without leaving empty grid cells, and the
+     last row's cards grow to fill the width evenly. */
+  .angles{
+    display:flex;flex-wrap:wrap;gap:1rem;
+    margin-top:2.25rem;
+  }
+  .angle{
+    flex:1 1 17rem;
+    background:var(--surface);border:1px solid var(--rule);border-radius:2px;
+    padding:1.5rem 1.4rem 1.6rem;display:flex;flex-direction:column;
+  }
+  .band--tint .angle{background:var(--paper)}
+  .angle-tag{
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--amber);margin:0 0 .7rem;
+  }
+  .angle h3{margin:0 0 .5rem}
+  .angle p{font-size:.92rem;margin:0 0 .9rem;color:#39445A}
+  .angle-plot{
+    font-family:var(--mono);font-size:.72rem;line-height:1.5;color:var(--mute);
+    border-top:1px dashed var(--rule);padding-top:.7rem;
+    margin:auto 0 0 !important;
+  }
+
+  /* ---------- PROBLEMS IN DETAIL ---------- */
+  /* Each track gets a labelled group; problems hang off the label. The
+     two-phase line under each is the real structure of this event — a dev
+     week, then a build day — so it's set in mono and carries its own rule. */
+  .pgroup{
+    display:grid;
+    grid-template-columns:minmax(0,.62fr) minmax(0,1.38fr);
+    gap:clamp(1.25rem,4vw,3.5rem);
+    padding:2rem 0 2.25rem;
+    border-top:1px solid var(--rule);
+  }
+  .pgroup:last-of-type{border-bottom:1px solid var(--rule)}
+  .pgroup-label{position:sticky;top:2rem;align-self:start}
+  .pgroup-label h3{
+    font-variation-settings:"wdth" 84,"opsz" 32;
+    font-size:1.5rem;margin-bottom:.5rem;
+  }
+  .pgroup-label p{font-size:.9rem;color:var(--mute);margin:0;max-width:30ch}
+
+  .pitem{padding:0 0 1.5rem}
+  .pitem:last-child{padding-bottom:0}
+  .pitem-q{
+    font-family:var(--display);
+    font-variation-settings:"wdth" 88,"opsz" 20;
+    font-weight:700;font-size:1.08rem;line-height:1.25;letter-spacing:-.01em;
+    margin:0 0 .4rem;
+  }
+  .pitem-q b{color:var(--amber);font-weight:700;margin-right:.45rem}
+  .pitem p{font-size:.94rem;margin:0 0 .7rem;color:#39445A}
+  .phase{
+    font-family:var(--mono);font-size:.73rem;line-height:1.55;
+    color:var(--mute);margin:0;padding-top:.6rem;
+    border-top:1px dashed var(--rule);
+    max-width:56ch;
+  }
+  .phase b{color:var(--ink);font-weight:500}
+  .phase span{display:block;margin-top:.2rem}
+
   /* ---------- SCHEDULE ---------- */
   .days{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,4vw,3rem);margin-top:2.25rem}
   .day{border-top:2.5px solid var(--navy);padding-top:1.1rem}
@@ -218,6 +282,22 @@
     width:7px;height:7px;background:var(--amber);
   }
   .checks li b{font-weight:600}
+
+  /* ---------- KIT ---------- */
+  .kit{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:2.25rem}
+  .kit-card{background:var(--surface);padding:1.5rem 1.4rem 1.6rem}
+  .band--tint .kit-card{background:var(--paper)}
+  .kit-card h3{font-size:1.1rem}
+  .kit-card p{font-size:.92rem;margin:0 0 .9rem}
+  .kit-card code{
+    font-family:var(--mono);font-size:.82rem;
+    background:rgba(35,45,75,.07);padding:.12em .4em;border-radius:2px;
+    overflow-wrap:anywhere;
+  }
+  .kit-path{
+    font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;
+    color:var(--amber);margin:0;
+  }
 
   /* ---------- PEOPLE ---------- */
   .people{
@@ -280,6 +360,49 @@
   }
   .btn:hover{background:#FF8412;transform:translateY(-1px)}
   .cta-sub{font-family:var(--mono);font-size:.75rem;color:#8C97B0;margin:.9rem 0 0;letter-spacing:.02em}
+
+  /* ---------- MAIN CHALLENGE (flagship) ---------- */
+  .flagship{
+    background:var(--navy);
+    color:#EDEFF4;
+    padding-block:clamp(3.5rem,9vh,6rem);
+  }
+  .flagship .eyebrow{color:#8C97B0}
+  .flagship .eyebrow{letter-spacing:.16em}
+  .flagship h2{
+    color:#fff;max-width:20ch;
+    font-size:clamp(2rem,1.2rem + 3vw,3.4rem);
+  }
+  .flagship .lede{color:#C3CAD8;max-width:72ch}
+  .flagship .lede em{font-style:italic;color:#fff}
+  .flagship-grid{
+    display:grid;grid-template-columns:1fr 1fr;
+    gap:clamp(1.5rem,4vw,3rem);
+    margin-top:clamp(2rem,4vh,2.75rem);
+  }
+  .flagship-grid--three{grid-template-columns:repeat(3,1fr)}
+  .flagship-phase{border-top:2.5px solid var(--amber);padding-top:1.1rem}
+  .flagship-tag{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--amber);margin:0 0 .7rem;
+  }
+  .flagship-phase p{color:#C3CAD8;font-size:.96rem;margin:0 0 .8rem;max-width:46ch}
+  .flagship-plot{
+    font-family:var(--mono);font-size:.78rem;line-height:1.5;
+    color:#8C97B0;border-top:1px dashed rgba(237,239,244,.2);
+    padding-top:.7rem;margin:0 !important;
+  }
+  .flagship-note{
+    margin:clamp(1.75rem,4vh,2.5rem) 0 0;
+    padding-top:1.1rem;border-top:1px solid rgba(237,239,244,.15);
+    font-family:var(--mono);font-size:.74rem;line-height:1.7;
+    color:#8C97B0;max-width:none;
+  }
+  .flagship-note code{
+    color:var(--amber);background:rgba(229,114,0,.14);
+    padding:.1em .34em;border-radius:2px;
+  }
+  .flagship a{color:#EDEFF4;text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
 
   /* ---------- ACT DIVIDER ---------- */
   .turn{
@@ -348,7 +471,9 @@
     color:#fff;margin:0 0 .45rem;
   }
   .talk-note{margin:0;font-size:.9rem;color:#B9C0D0;max-width:46ch}
-  /* Unannounced speaker — a slot, not an omission. */
+  .talk-note a{text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
+  /* Unannounced speaker — a slot, not an omission. Confirmed names are set
+     in plain display type; only the placeholder gets the masked-token chip. */
   .mask{
     display:inline-block;
     font-family:var(--mono);
@@ -361,7 +486,7 @@
 
 
   footer{padding-block:2.75rem;font-size:.85rem;color:var(--mute)}
-  .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:2rem}
+  .foot-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:2rem}
   footer h4{
     font-family:var(--mono);font-size:.66rem;letter-spacing:.15em;text-transform:uppercase;
     color:var(--ink);margin:0 0 .7rem;font-weight:500;
@@ -374,12 +499,15 @@
     .facts{grid-template-columns:1fr 1fr}
     .fact{border-left:0;border-top:1px solid var(--rule);padding-inline:0}
     .fact:nth-child(2n){padding-left:1.25rem;border-left:1px solid var(--rule)}
-    .split,.days,.tracks,.foot-grid{grid-template-columns:1fr}
-    .tracks{gap:1px}
+    .split,.days,.tracks,.kit,.foot-grid,.flagship-grid,.flagship-grid--three{grid-template-columns:1fr}
+    .tracks,.kit{gap:1px}
     /* Sticky needs a taller neighbour to pin against — pointless in one column */
     .talks-grid{grid-template-columns:1fr;gap:2.25rem}
     .talks-aside{position:static}
     .talks-note{max-width:none}
+    .pgroup{grid-template-columns:1fr;gap:1.25rem;padding-bottom:1.75rem}
+    .pgroup-label{position:static}
+    .pgroup-label p{max-width:none}
   }
   @media (max-width:600px){
     .slot{grid-template-columns:1fr;gap:.15rem}
@@ -436,7 +564,6 @@
     <div class="fact"><dt>When</dt><dd>Fri 9 October<br>Fri 16 October, 2026</dd></div>
     <div class="fact"><dt>Where</dt><dd>Capital One Hub</dd></div>
     <div class="fact"><dt>Teams</dt><dd>2&ndash;4 people<br>Solo sign-ups matched</dd></div>
-    <!-- <div class="fact"><dt>Provided</dt><dd>starter code, lunch</dd></div> -->
   </dl>
 </section>
 
@@ -444,77 +571,108 @@
 <section class="band wrap">
   <div class="split">
     <div>
-      <h2>Theme: Interpretability, safety evaluation, and security of AI&nbsp;systems</h2>
+      <h2>Theme: Trust, but verify &mdash; interpreting agentic&nbsp;AI</h2>
     </div>
     <div>
-      <p>At the kickoff you get a short list of starting problems, each small enough to finish in a day. Take one as written, change it, or bring your own &mdash; anything within the theme works.</p>
+      <p>As agentic AI takes on real authority in security-sensitive work, every safety argument rests on something we <em>observe</em>: a boundary it respects, a chain of thought it shows us, a civil exchange between agents. This year asks when those observations can be trusted &mdash; and uses interpretability to check from the inside.</p>
+      <!-- Links to repo files use the GitHub URL, not a relative path: GitHub Pages
+           serves /docs as the site root, so ../ would point outside the published tree.
+           TODO: replace ORG with the real GitHub org/user once the repo is pushed. -->
+      <p>Broad theme, specific research questions, three <a href="#thrusts">thrusts</a>. Pick one and go deep. The full write-up &mdash; directions, starting points, and the traps that eat results &mdash; is in the problem statement.</p>
     </div>
   </div>
+</section>
 
-  <p class="eyebrow tracks-head">Potential projects</p>
-  <div class="tracks">
-    <article class="track">
-      <p class="track-tag">Track &mdash; Interpretability</p>
-      <h3>Open the model up</h3>
-      <p>Find the mechanism behind a behaviour and show your evidence for it.</p>
-      <ul>
-        <li>Locate a refusal direction in activation space</li>
-        <li>Patch activations to isolate a circuit</li>
-        <li>Test whether an SAE feature transfers between models</li>
-      </ul>
-    </article>
-    <article class="track">
-      <p class="track-tag">Track &mdash; Safety evaluation</p>
-      <h3>Build a scorecard</h3>
-      <p>Capture an emergent safety problem in cybersecurity and measure the model's performance.</p>
-      <ul>
-        <li>Define the scenario before evaluation</li>
-        <li>Use the LLM-judge boilerplate in the starter repo</li>
-        <li>Focus on single- or multi-agents using small models</li>
-      </ul>
-    </article>
-    <article class="track">
-      <p class="track-tag">Track &mdash; Security</p>
-      <h3>Treat it as attack surface</h3>
-      <p>Find a failure in a model-driven system, then write the test that catches it.</p>
-      <ul>
-        <li>Prompt injection through retrieved content</li>
-        <li>Tool misuse in an agent scaffold</li>
-        <li>Data exfiltration paths and their detectors</li>
-      </ul>
-    </article>
+<!-- ===== MAIN CHALLENGE ===== -->
+<section class="flagship">
+  <div class="wrap">
+    <p class="eyebrow">The question behind all three thrusts</p>
+    <h2>Can you trust what the agent shows&nbsp;you?</h2>
+    <p class="lede">A model that knows it&rsquo;s being tested can behave on the test and differently in deployment; a chain of thought can read clean while the real reasoning runs elsewhere; a group of safe agents can fail together. Behaviour you watch from the outside can be gamed. Interpretability reads the evidence the model didn&rsquo;t choose to show you &mdash; and whichever thrust you pick, the arc is the same: find where trust breaks, measure how badly, then build the check that catches it.</p>
+
+    <div class="flagship-grid flagship-grid--three">
+      <div class="flagship-phase">
+        <p class="flagship-tag">Thrust I</p>
+        <p><b>The boundary.</b> Does the agent respect a limit because of the rule or because it can tell it&rsquo;s being watched?</p>
+      </div>
+      <div class="flagship-phase">
+        <p class="flagship-tag">Thrust II</p>
+        <p><b>The reasoning.</b> Does the chain of thought reflect what the model is actually doing?</p>
+      </div>
+      <div class="flagship-phase">
+        <p class="flagship-tag">Thrust III</p>
+        <p><b>The swarm.</b> Do safety properties survive once agents start talking to each other?</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== THRUSTS ===== -->
+<section class="band band--tint" id="thrusts">
+  <div class="wrap">
+    <p class="eyebrow">Three thrusts</p>
+    <h2>Pick one and go&nbsp;deep.</h2>
+    <p class="lede">Each thrust is a trust question with several concrete research directions. Thrust I ships a ready-to-run challenge in the starter; II and III give you the toolkit, the references, and more room to build. Full directions and starting points are in the problem statement.</p>
+
+    <div class="angles">
+      <article class="angle">
+        <p class="angle-tag">Thrust I &middot; the boundary</p>
+        <h3>Can you trust the boundary?</h3>
+        <p>An agent respects a limit under test. Because of the rule, or because it can tell it&rsquo;s a test? If the latter, every sandbox-based assurance is hollow &mdash; and you can&rsquo;t settle it behaviourally, because any test is itself a sandbox.</p>
+        <p class="angle-plot">Directions &mdash; steer the &ldquo;I&rsquo;m in a sandbox&rdquo; direction and watch behaviour move &middot; find which cue carries it (is emptiness the tell?) &middot; test whether the direction transfers across models &middot; stress the probe itself.</p>
+      </article>
+      <article class="angle">
+        <p class="angle-tag">Thrust II &middot; the reasoning</p>
+        <h3>Can you trust the reasoning?</h3>
+        <p>Safety tooling increasingly reads a model&rsquo;s chain of thought. But the stated reasoning need not match the computation that drove the answer &mdash; and a reasoning model can notice it&rsquo;s being evaluated and narrate accordingly.</p>
+        <p class="angle-plot">Directions &mdash; plant a cue that flips the answer and check whether the trace admits it &middot; probe mid-reasoning for an &ldquo;I&rsquo;m being watched&rdquo; signal &middot; measure a trace-monitor&rsquo;s blind spot &middot; predict the answer from hidden states the trace hides.</p>
+      </article>
+      <article class="angle">
+        <p class="angle-tag">Thrust III &middot; the swarm</p>
+        <h3>Can you trust a multi-agent system?</h3>
+        <p>Safety is trained into a model, not a system of them. Once agents delegate and talk, new failures appear: an injected instruction propagates, a held constraint dilutes across handoffs, two agents coordinate toward something neither was asked to do.</p>
+        <p class="angle-plot">Directions &mdash; measure how far a planted instruction spreads, then filter it &middot; count the hops until a constraint dilutes &middot; probe a handoff for &ldquo;this came from a peer&rdquo; &middot; audit two agents for collusion a per-agent monitor misses.</p>
+      </article>
+    </div>
   </div>
 </section>
 
 <!-- ===== SCHEDULE ===== -->
-<section class="band band--tint">
+<section class="band">
   <div class="wrap">
     <p class="eyebrow">Schedule</p>
-    <h2>Two sessions, a week apart.</h2>
-    <p class="lede">The first Friday sets you up. The second is the dev week. The third is the Build day.</p>
+    <h2>Two Fridays, a week apart.</h2>
+    <p class="lede">The first Friday sets you up. The week between is yours to build in. The second Friday is the build day, and it ends with presentations.</p>
 
     <div class="days">
       <div class="day">
         <p class="day-date">Friday 9 Oct</p>
-        <!-- TODO: confirm kickoff time with Capital One Hub booking, then replace "Time TBC" -->
         <p class="day-meta">Kickoff &middot; 9:00 AM &ndash; 11:00 AM</p>
-        <div class="slot"><time>9:00-9:30</time><p>Problem statements released<span>The full brief, the starting problems, and the evaluation criteria.</span></p></div>
-        <div class="slot"><time>9:30-10:00</time><p>Organizers' talks<span>Lightning talks on interpretability, safety, and cybersecurity.</span></p></div>
-        <div class="slot"><time>10:00-10:30</time><p>Tooling walkthrough<span>Starter repo and the LLM-judge boilerplate.</span></p></div>
+        <div class="slot"><time>9:00-10:00</time><p>Organizer talks &amp; hackathon theme<span>Lightning talks from Yong-Yeol, Chirag, Wajih, and Shubu, plus the full brief, the three thrusts, and what a good result looks like.</span></p></div>
+        <div class="slot"><time>10:00-10:30</time><p>Tooling walkthrough<span>The probing and steering toolkit, and the agent sandbox.</span></p></div>
         <div class="slot"><time>10:30-11:00</time><p>Networking<span>Meet the organizers and other attendees and form a team. We will match solo sign-ups.</span></p></div>
       </div>
 
       <div class="day day--main">
         <p class="day-date">Friday 16 Oct</p>
         <p class="day-meta">Build day &middot; 9:00 AM &ndash; 5:00 PM</p>
-        <div class="slot"><time>9:00-9:30</time><p>Doors open, Breakfast<span>Room is yours all day.</span></p></div>
-        <div class="slot"><time>9:30-10:15am</time><p>Keynote<span>Greg Frank. MoltAI</span></p></div>
-        <div class="slot"><time>10:15-3:30pm</time><p>Build time<span>Work on your project.</span></p></div>
+        <div class="slot"><time>9:00-9:30</time><p>Doors open, breakfast<span>Room is yours all day.</span></p></div>
+        <div class="slot"><time>9:30-10:15</time><p>Keynote<span>Greg Frank, MaceAI.</span></p></div>
+        <div class="slot"><time>10:15-3:30</time><p>Build time<span>Work on your project. Organizers circulating.</span></p></div>
         <div class="slot"><time>3:30</time><p>Presentations<span>Five minutes per team, plus questions.</span></p></div>
-        <!-- TODO: $100 gift card is pending budget approval — delete this slot if it is not confirmed -->
+        <!-- TODO: gift card is pending budget approval — delete this slot if it is not confirmed -->
         <div class="slot"><time>4:45</time><p>Results<span>Gift cards for the winning team.</span></p></div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ===== THE KIT ===== -->
+<section class="band band--tint">
+  <div class="wrap">
+    <p class="eyebrow">The kit</p>
+    <h2>Everything the walkthrough covers.</h2>
+    <p class="lede">Six notebooks that build from the basics to a ready-to-run Thrust I challenge, all on a laptop CPU. The probing and steering tools carry over to all three thrusts. The walkthrough on the 9th runs through them live.</p>
   </div>
 </section>
 
@@ -526,16 +684,13 @@
       <h2>A five-minute presentation at 3:30 on the build day.</h2>
       <ul class="checks">
         <li><b>Five minutes per team, plus questions.</b> Slides are optional. Show what you built and what you found.</li>
-        <!-- <li><b>Your code.</b> Pushed to the hackathon repo, with a README that lets someone re-run it.</li> -->
-        <!-- <li><b>A short report.</b> One or two pages: what you asked, what you did, what you found, what you would do next.</li> -->
+        <li><b>Say what you don&rsquo;t know.</b> A clean negative result presented honestly scores above an overclaimed positive one.</li>
       </ul>
-      <!-- <p style="margin-top:1.5rem;font-size:.9rem;color:var(--mute)">Submitted work is released under the repository&rsquo;s open-source licence so other teams can build on it. You keep the credit.</p> -->
     </div>
     <div>
       <p class="eyebrow">Who it&rsquo;s for</p>
       <h2>Any student comfortable with Python.</h2>
       <p>Open to graduate students in data science, computer science, and engineering, and to undergraduates with relevant coursework. No prior interpretability experience is needed; the tooling walkthrough on the first day covers the starter repo.</p>
-      <!-- <p>Bring a laptop. Everything heavier runs on the compute we provide, so a modest machine is fine.</p> -->
     </div>
   </div>
 </section>
@@ -580,11 +735,10 @@
   <div class="wrap">
     <p class="eyebrow">Registration</p>
     <h2>Two minutes. No team or idea required yet.</h2>
-    <p class="lede">
-      Registration closes on September 25th &middot; Places are capped by room capacity.
-    <!-- Tell us your name and your email, and which sessions you can make. Everything else on the form is optional and helps us balance the teams. -->
-    </p>
-    <!-- TODO: replace with the live Google Form URL before announcing -->
+    <!-- TODO: the close date read "September 25th", which is in the past — students
+         reading today would think they had missed it. Set to two days before the
+         kickoff; change if registration is genuinely closed, and drop the button if so. -->
+    <p class="lede">Registration closes Wednesday 7 October &middot; Places are capped by room capacity.</p>
     <a class="btn" href="https://forms.gle/EyAS3ha4oiuDKECR7" id="register-link">Register</a>
   </div>
 </section>
@@ -612,14 +766,15 @@
     <div class="talks-list">
       <article class="talk">
         <p class="talk-meta">Fall 2026 &middot; In person &middot; Keynote</p>
-        <p class="talk-name"><span class="mask">Greg Frank</span></p>
-        <p class="talk-note">Co-founder and Chief Scientist at <a href="https://moltaicorp.com/" target="_blank">MoltAI</a></p>
+        <p class="talk-name">Greg Frank</p>
+        <p class="talk-note">Co-founder and Chief Scientist at <a href="https://moltaicorp.com/" target="_blank">MaceAI</a>. Speaking on the build day, 16 October.</p>
       </article>
 
       <article class="talk">
         <p class="talk-meta">November 2026 &middot; Virtual</p>
-        <p class="talk-name"><span class="mask">Snowcrash Lab</span></p>
-        <p class="talk-note"></p>
+        <p class="talk-name">Snowcrash Lab</p>
+        <!-- TODO: add the speaker name and talk topic once confirmed -->
+        <p class="talk-note">Fall seminar. Details to follow.</p>
       </article>
 
       <article class="talk">
@@ -649,6 +804,11 @@
     <div>
       <h4>Hosted by</h4>
       <p>Interpretability for AI Safety and Science &mdash; a Research Interest Group at the School of Data Science.</p>
+    </div>
+    <div>
+      <h4>For participants</h4>
+      <!-- TODO: replace ORG with the real GitHub org/user (see note in the Theme section) -->
+      <p><a href="https://github.com/ORG/rig-interpretability-hackathon/blob/main/problem-statement.md">Problem statement</a><br><a href="https://github.com/ORG/rig-interpretability-hackathon/blob/main/starter/WALKTHROUGH.md">Tooling walkthrough</a><br><a href="https://github.com/ORG/rig-interpretability-hackathon/tree/main/starter">Starter repo</a></p>
     </div>
   </div>
 </footer>
