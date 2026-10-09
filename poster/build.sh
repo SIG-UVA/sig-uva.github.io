@@ -5,10 +5,10 @@ poster_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 chrome_bin=${CHROME_BIN:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}
 registration_url=""
 variant=""
-query=""
+params=()
 
 usage() {
-  echo "Usage: $0 [--qr URL] [--no-deadline]" >&2
+  echo "Usage: $0 [--qr URL] [--no-deadline] [--no-logos]" >&2
 }
 
 while (($#)); do
@@ -19,8 +19,13 @@ while (($#)); do
       shift 2
       ;;
     --no-deadline)
-      variant="-no-deadline"
-      query="?nodeadline"
+      variant+="-no-deadline"
+      params+=(nodeadline)
+      shift
+      ;;
+    --no-logos)
+      variant+="-no-logos"
+      params+=(nologos)
       shift
       ;;
     -h|--help)
@@ -55,6 +60,10 @@ if [[ -n "$registration_url" ]]; then
   qrencode -t SVG -m 2 -o "$poster_dir/assets/qr-info.svg" "$registration_url"
 fi
 
+query=""
+if ((${#params[@]})); then
+  query="?$(IFS='&'; echo "${params[*]}")"
+fi
 poster_url="file://$poster_dir/index.html$query"
 png_out="$poster_dir/poster$variant.png"
 pdf_out="$poster_dir/poster$variant.pdf"
