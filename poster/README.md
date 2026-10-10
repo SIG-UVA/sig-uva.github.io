@@ -20,6 +20,8 @@ To build the variant without the registration deadline line (`poster-no-deadline
 ./poster/build.sh --no-deadline
 ```
 
+To list the presenting organizations as text instead of logos, add `--no-logos`. The flags combine; `--no-deadline --no-logos` writes `poster-no-deadline-no-logos.{png,pdf}`. In a browser, the same variants are `index.html?nodeadline&nologos`.
+
 The script requires Google Chrome, Poppler (`pdfinfo` and `pdftoppm`), `qpdf`, `uv`, and—only with `--qr`—`qrencode`. Set `CHROME_BIN` if Chrome is installed elsewhere. The QR currently points to `https://sig-uva.github.io/`. PDF metadata is normalized so rebuilding unchanged inputs does not change the PDF.
 
 ## Image directions considered
